@@ -1,16 +1,44 @@
-using System.ComponentModel.DataAnnotations;
+using RazorPagesPizza.Models;
 
-namespace RazorPagesPizza.Pages;
+namespace RazorPagesPizza.Services;
+public static class PizzaService
+{
+    static List<Pizza> Pizzas { get; }
+    static int nextId = 3;
+    static PizzaService()
+    {
+        Pizzas = new List<Pizza>
+                {
+                    new Pizza { Id = 1, Name = "Classic Italian", Price=20.00M, Size=PizzaSize.Large, IsGlutenFree = false },
+                    new Pizza { Id = 2, Name = "Veggie", Price=15.00M, Size=PizzaSize.Small, IsGlutenFree = true }
+                };
+    }
 
-public class Pizza{
-    public int id {get;set;}
-    [Required]
-    public string? Name {get; set;}
-    public PizzaSize Size {get; set;}
-    public bool isGlutenFree {get; set;}
+    public static List<Pizza> GetAll() => Pizzas;
 
-    [Range(0.01, 9999.99)]
-    public decimal Price {get; set;}
+    public static Pizza? Get(int id) => Pizzas.FirstOrDefault(p => p.Id == id);
+
+    public static void Add(Pizza pizza)
+    {
+        pizza.Id = nextId++;
+        Pizzas.Add(pizza);
+    }
+
+    public static void Delete(int id)
+    {
+        var pizza = Get(id);
+        if (pizza is null)
+            return;
+
+        Pizzas.Remove(pizza);
+    }
+
+    public static void Update(Pizza pizza)
+    {
+        var index = Pizzas.FindIndex(p => p.Id == pizza.Id);
+        if (index == -1)
+            return;
+
+        Pizzas[index] = pizza;
+    }
 }
-
-public enum PizzaSize {small, medium, large}
